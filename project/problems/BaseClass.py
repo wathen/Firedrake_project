@@ -1,6 +1,6 @@
 from firedrake import TestFunction, TrialFunction, \
     TestFunctions, TrialFunctions, SpatialCoordinate, \
-    as_vector, Function
+    as_vector, Function, interpolate
 from abc import ABCMeta, abstractmethod
 import math
 
@@ -116,11 +116,11 @@ class BaseClass(object):
 
         if isinstance(f, list):
             if len(f) == 1:
-                out = eval(f[0])
+                out = interpolate(eval(f[0]), self._V)
             elif len(f) == 2:
-                out = as_vector([eval(f[0]), eval(f[1])])
+                out = interpolate(as_vector([eval(f[0]), eval(f[1])]), self._V)
             elif len(f) == 3:
-                out = as_vector([eval(f[0]), eval(f[1]), eval(f[2])])
+                out = interpolate(as_vector([eval(f[0]), eval(f[1]), eval(f[2])]), self._V)
             else:
                 raise RuntimeError('Input list for function value is of '
                                    'dimension {}, need to be at most a 3D '

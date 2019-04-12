@@ -10,7 +10,7 @@ class Poisson(BaseClass):
         self.nu = nu
 
     def laplacian(self):
-        return self.nu * fd.inner(fd.grad(self.u), fd.grad(self.v)) * fd.dx
+        return self.nu * fd.inner(fd.grad(self.sol), fd.grad(self.v)) * fd.dx
 
     @property
     def form(self):
@@ -37,7 +37,7 @@ class Poisson(BaseClass):
                 + sympy.diff(eval(u[2]), y, y) \
                 + sympy.diff(eval(u[2]), z, z)
             out.append(str(L3))
-        print(super().convert_sympy_firedrake_expresion(out))
+        out = [str(self.nu) + ' * (' + str(item) + ')' for item in out]
         return super().convert_sympy_firedrake_expresion(out)
 
     @property
@@ -55,5 +55,6 @@ class Poisson(BaseClass):
         if not self._f:
             if self._uE:
                 self._f = self.laplacian_exact_differentiator(self._uE)
-            self._rhs = fd.inner(self.Expression(self._f), self.v) * fd.dx
+            print (self.Expression(self._f))
+            self._rhs = fd.inner(self.Expression(self._f), self.v) * fd.dx(self.mesh)
         return self._rhs
