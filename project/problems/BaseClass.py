@@ -1,6 +1,4 @@
-from firedrake import TestFunction, TrialFunction, \
-    TestFunctions, TrialFunctions, SpatialCoordinate, \
-    as_vector, Function, interpolate
+from firedrake import *
 from abc import ABCMeta, abstractmethod
 import math
 
@@ -11,7 +9,7 @@ class BaseClass(object):
 
     def __init__(self, V):
         self._V = V
-        self.mesh = self._V.mesh()
+        self.mesh = self.V.mesh()
         self.test_trial_functions(self._V)
         self._form = None
         self._rhs = None
@@ -77,6 +75,9 @@ class BaseClass(object):
 
     @property
     def uB(self):
+        if not self._uB:
+            if self._uE:
+                self._uB = self.uE
         return self._uB
 
     @uB.setter
@@ -104,37 +105,8 @@ class BaseClass(object):
             self.u = TrialFunctions(V)
             self.v = TestFunctions(V)
 
-    def Expression(self, f):
-        mesh_dim = self.mesh.cell_dimension()
-
-        if mesh_dim == 1:
-            x = SpatialCoordinate(self._V.mesh())
-        elif mesh_dim == 2:
-            (x, y) = SpatialCoordinate(self._V.mesh())
-        elif mesh_dim == 3:
-            (x, y, z) = SpatialCoordinate(self._V.mesh())
-
-        if isinstance(f, list):
-            if len(f) == 1:
-                out = interpolate(eval(f[0]), self._V)
-            elif len(f) == 2:
-                out = interpolate(as_vector([eval(f[0]), eval(f[1])]), self._V)
-            elif len(f) == 3:
-                out = interpolate(as_vector([eval(f[0]), eval(f[1]), eval(f[2])]), self._V)
-            else:
-                raise RuntimeError('Input list for function value is of '
-                                   'dimension {}, need to be at most a 3D '
-                                   'vector'.format(len(f)))
-            return out
-        else:
-            raise RuntimeError('Input function f needs to be list')
-
     def convert_sympy_firedrake_expresion(self, u):
         u = [item.replace('pi', 'math.pi') for item in u]
-        u = [item.replace('cos', 'math.cos') for item in u]
-        u = [item.replace('sin', 'math.sin') for item in u]
-        u = [item.replace('tan', 'math.tan') for item in u]
-        u = [item.replace('exp', 'math.exp') for item in u]
         return u
 
     def has_nullspace(self):
