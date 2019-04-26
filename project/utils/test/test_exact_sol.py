@@ -111,10 +111,6 @@ class ExactSolTests_advection(unittest.TestCase):
         assert expect_advection == exact_sol.advection(expr, wind)
 
 
-'+(tan(y))*(tan(x + z)**2 + 1)+(x*exp(z))*(tan(x + z)**2 + 1)+(x*exp(z))*(0)+(exp(x))*(0)+(x*exp(z))*(tan(x + z)**2 + 1)'
-'+(tan(y))*(0)+(exp(x))*(exp(y))+(x*exp(z))*(-sin(z))'
-
-
 class ExactSolTests_curl(unittest.TestCase):
 
     def test_curl_1d(self):
