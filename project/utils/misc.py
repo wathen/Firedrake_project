@@ -1,19 +1,9 @@
-from firedrake import FunctionSpace, VectorFunctionSpace, SpatialCoordinate, interpolate, as_vector, Constant, sin, cos, tan, exp
+from firedrake import FunctionSpace, VectorFunctionSpace, SpatialCoordinate, interpolate, as_vector, Constant, exp, sin, cos, tan, asin, acos, atan, atan_2, cosh, sinh, tanh, pi,
 
 
 def Expression(f, V, degree_raise=None):
     if degree_raise != None:
-        element = V._ufl_element
-
-        degree = element.degree(0)
-        space_type = repr(element)[0]
-        element_type = element.family()
-
-        mesh = V.mesh()
-        if space_type == 'V':
-            V = VectorFunctionSpace(mesh, element_type, degree + degree_raise)
-        elif space_type == 'F':
-            V = FunctionSpace(mesh, element_type, degree + degree_raise)
+        V = FunctionSpaceDegreeRaise(V, degree_raise)
 
     mesh_dim = V.mesh().cell_dimension()
     f_len = len(f)
@@ -46,3 +36,19 @@ def Expression(f, V, degree_raise=None):
         return out
     else:
         raise RuntimeError('Input function f needs to be list')
+
+
+def FunctionSpaceDegreeRaise(V, degree_raise):
+    element = V._ufl_element
+
+    degree = element.degree(0)
+    space_type = repr(element)[0]
+    element_type = element.family()
+
+    mesh = V.mesh()
+    if space_type == 'V':
+        V = VectorFunctionSpace(mesh, element_type, degree + degree_raise)
+    elif space_type == 'F':
+        V = FunctionSpace(mesh, element_type, degree + degree_raise)
+
+    return V

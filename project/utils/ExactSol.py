@@ -33,8 +33,10 @@ class ExactSol(object):
             g_list = self.ijk_to_list(g)
             temp = ''
             for (w, g) in zip(wind, g_list):
-                if w != '0' and g != '0':
-                    temp += '+(' + w + ')*(' + g +')'
+                if w == '0' or g == '0':
+                    temp += '+0'
+                else:
+                    temp += '+(' + w + ')*(' + g + ')'
             out.append(temp)
 
         return out
@@ -93,7 +95,10 @@ class ExactSol(object):
         R = spv.CoordSys3D('R')
         x, y, z = R.base_scalars()
         r = eval(str(text))
-        l = [r.coeff(R.i), r.coeff(R.j), r.coeff(R.k)]
+        if isinstance(r, int):
+            l = [r, r, r]
+        else:
+            l = [r.coeff(R.i), r.coeff(R.j), r.coeff(R.k)]
         l = [str(x).replace('R.', '') for x in l]
         return l
 
