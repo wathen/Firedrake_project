@@ -1,27 +1,17 @@
 from firedrake import *
-from project import Poisson
-from project import ConvecDiff
-from project.utils import Expression
+from project import Poisson, ExactSol, ConvecDiff, Helmholtz, misc
 import numpy as np
+from matplotlib.pylab import plt
 
 
-n = 2**3.
-mesh = UnitSquareMesh(n, n)
-V = VectorFunctionSpace(mesh, 'CG', 1)
-
-p = ConvecDiff(V, nu=0.01, opt={'form': 'linear'})
-p.uE = ['x*x*sin(x)', 'y*x']
-p.wind = ['x*x*sin(x)', 'y*x']
-
-print(p.form)
-print(p.rhs)
-print(p.f)
-print(p.uB)
-print(p.uE)
-print(p.wind)
-
-lvp = LinearVariationalProblem(p.form, p.rhs, p.sol, p.bcs)
-lvs = LinearVariationalSolver(lvp, solver_parameters={'ksp_type': 'cg',
-                                                      'pc_type': 'hypre'})
-lvs.solve()
-print (np.linalg.norm(p.sol.dat.data[:, 0] - Expression(p.uE, V).dat.data[:, 0]))
+for i in range(4):
+    n = 2**(i + 2)
+    mesh = UnitCubeMesh(n, n, n)
+    V = VectorFunctionSpace(mesh, 'CG', 1)
+    p = Helmholtz(V, nu=1., opt={'form': 'linear'})
+    p.uE = ['sin(y)*cos(x)', 'y*x', 'tan(z)*y*x']
+    p.k = 1.0
+    solve(p.form - p.rhs == 0, p.sol, bcs=p.bcs)
+    print(errornorm(misc.Expression(p.uE, V, 1), p.sol))
+    e = Function(V)
+    e.dat.data[:] = p.sol.dat.data - misc.Expression(p.uE, V).dat.data
