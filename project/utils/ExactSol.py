@@ -12,8 +12,9 @@ class ExactSol(object):
 
         grad = []
         for i in range(len(expr)):
-            grad.append(spv.gradient(eval(expr[i])))
-        return self.post_process(grad)
+            print(self.ijk_to_list(spv.gradient(eval(expr[i]))))
+            grad.append(self.ijk_to_list(spv.gradient(eval(expr[i]))))
+        return grad
 
     def laplacian(self, expr):
         out = []
@@ -22,12 +23,9 @@ class ExactSol(object):
         return self.post_process(out)
 
     def advection(self, expr, wind):
-        grad = []
-        for i in range(len(expr)):
-            grad.append(spv.gradient(eval(expr[i])))
+        grad = self.vector_gradient(expr)
         out = []
-        for g in grad:
-            g_list = self.ijk_to_list(g)
+        for g_list in grad:
             temp = ''
             for (w, g) in zip(wind, g_list):
                 if w == '0' or g == '0':
@@ -124,3 +122,8 @@ class ExactSol(object):
                 out.append(a + '+' + str(alpha) + '*(' + b + ')')
 
         return out
+
+
+e = ExactSol()
+a = ['x**2+sin(y)', 'exp(y)+cos(z)', 'tan(z+x)']
+print(e.vector_gradient(a))

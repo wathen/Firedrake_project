@@ -69,20 +69,22 @@ class ExactSolTests_vector_gradient(unittest.TestCase):
 
     def test_vector_gradient_1d(self):
         expr = ['x**2+sin(y)']
-        expect_vector_gradient = ['2*x*i + (cos(y))*j']
+        expect_vector_gradient = [['2*x', 'cos(y)', '0']]
         assert expect_vector_gradient == exact_sol.vector_gradient(expr)
 
     def test_vector_gradient_2d(self):
         expr = ['x**2+sin(y)', 'exp(y)+cos(z)']
-        expect_vector_gradient = ['2*x*i + (cos(y))*j',
-                                  ' (exp(y))*j + (-sin(z))*k']
+        expect_vector_gradient = [['2*x', 'cos(y)', '0'],
+                                  ['0', 'exp(y)', '-sin(z)']]
+
         assert expect_vector_gradient == exact_sol.vector_gradient(expr)
 
     def test_vector_gradient_3d(self):
         expr = ['x**2+sin(y)', 'exp(y)+cos(z)', 'tan(z+x)']
-        expect_vector_gradient = ['2*x*i + (cos(y))*j',
-                                  ' (exp(y))*j + (-sin(z))*k',
-                                  ' (tan(x + z)**2 + 1)*i + (tan(x + z)**2 + 1)*k']
+        expect_vector_gradient = [['2*x', 'cos(y)', '0'],
+                                  ['0', 'exp(y)', '-sin(z)'],
+                                  ['tan(x + z)**2 + 1', '0', 'tan(x + z)**2 + 1']]
+
         assert expect_vector_gradient == exact_sol.vector_gradient(expr)
 
 
