@@ -1,4 +1,4 @@
-from firedrake import FunctionSpace, VectorFunctionSpace, SpatialCoordinate, interpolate, as_vector, Constant, exp, sin, cos, tan, asin, acos, atan, atan_2, cosh, sinh, tanh, pi,
+from firedrake import FunctionSpace, VectorFunctionSpace, SpatialCoordinate, interpolate, as_vector, Constant, exp, sin, cos, tan, asin, acos, atan, atan_2, cosh, sinh, tanh, pi
 
 
 def Expression(f, V, degree_raise=None):

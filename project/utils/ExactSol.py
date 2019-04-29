@@ -2,12 +2,13 @@ from sympy import *
 import sympy.vector as spv
 import re
 
+R = spv.CoordSys3D('R')
+x, y, z = R.base_scalars()
+
 
 class ExactSol(object):
 
     def vector_gradient(self, expr):
-        R = spv.CoordSys3D('R')
-        x, y, z = R.base_scalars()
 
         grad = []
         for i in range(len(expr)):
@@ -15,16 +16,12 @@ class ExactSol(object):
         return self.post_process(grad)
 
     def laplacian(self, expr):
-        R = spv.CoordSys3D('R')
-        x, y, z = R.base_scalars()
         out = []
         for i in range(len(expr)):
             out.append(spv.divergence(spv.gradient(eval(expr[i]))))
         return self.post_process(out)
 
     def advection(self, expr, wind):
-        R = spv.CoordSys3D('R')
-        x, y, z = R.base_scalars()
         grad = []
         for i in range(len(expr)):
             grad.append(spv.gradient(eval(expr[i])))
@@ -42,8 +39,6 @@ class ExactSol(object):
         return out
 
     def curl(self, expr):
-        R = spv.CoordSys3D('R')
-        x, y, z = R.base_scalars()
         expr_len = len(expr)
         if expr_len == 1:
             expr = ['0'] + ['0'] + expr
@@ -66,8 +61,6 @@ class ExactSol(object):
         return self.curl(self.curl(expr))
 
     def cross(self, a, b):
-        R = spv.CoordSys3D('R')
-        x, y, z = R.base_scalars()
         a_len = len(a)
         if a_len == 1:
             a = ['0'] + ['0'] + a
@@ -92,8 +85,6 @@ class ExactSol(object):
         return out
 
     def ijk_to_list(self, text, pattern=['R.i', 'R.j', 'R.k']):
-        R = spv.CoordSys3D('R')
-        x, y, z = R.base_scalars()
         r = eval(str(text))
         if isinstance(r, int):
             l = [r, r, r]
@@ -115,5 +106,21 @@ class ExactSol(object):
     def scalar_mult(self, scalar, expr):
         out = []
         for i in expr:
-            out.append(str(scalar) + '*' + i)
+            if i == '0':
+                out.append(i)
+            else:
+                out.append(str(scalar) + '*' + i)
+        return out
+
+    def vec_add(self, expr1, expr2, alpha=1):
+        out = []
+        if len(expr1) != len(expr2):
+            raise ValueError('Length of vectors not equal')
+
+        for (a, b) in zip(expr1, expr2):
+            if a == '0' and b == '0':
+                out.append('0')
+            else:
+                out.append(a + '+' + str(alpha) + '*(' + b + ')')
+
         return out
