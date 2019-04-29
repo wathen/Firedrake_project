@@ -1,16 +1,26 @@
 from firedrake import *
 from abc import ABCMeta, abstractmethod
 import math
+from project.utils import ExactSol, Expression
 
 
 class BaseClass(object):
+    """
+    Definition of a base class implementation a steady-state partial
+    differential equation.
 
+    Types of data:
+        - strings: f, uE, uB
+        - firedake operators: form, rhs, bcs, sol
+    """
     __metaclass__ = ABCMeta
 
     def __init__(self, V):
         self._V = V
         self.mesh = self.V.mesh()
         self.test_trial_functions(self._V)
+        self.ExactSol = ExactSol()
+
         self._form = None
         self._rhs = None
         self._bcs = None
@@ -51,6 +61,9 @@ class BaseClass(object):
 
     @property
     def rhs(self):
+        if not self._rhs:
+            self._rhs = inner(Expression(self.f, self.V), self.v) * dx
+
         return self._rhs
 
     @rhs.setter
@@ -59,6 +72,10 @@ class BaseClass(object):
 
     @property
     def bcs(self):
+        if not self._bcs:
+            self._bcs = [DirichletBC(self.V,
+                                     Expression(self.uB, self.V),
+                                     'on_boundary')]
         return self._bcs
 
     @bcs.setter
