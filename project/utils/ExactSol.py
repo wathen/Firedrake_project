@@ -112,9 +112,6 @@ class ExactSol(object):
 
     def vec_add(self, expr1, expr2, alpha=1):
         out = []
-        if len(expr1) != len(expr2):
-            raise ValueError('Length of vectors not equal')
-
         for (a, b) in zip(expr1, expr2):
             if a == '0' and b == '0':
                 out.append('0')
@@ -122,8 +119,3 @@ class ExactSol(object):
                 out.append(a + '+' + str(alpha) + '*(' + b + ')')
 
         return out
-
-
-e = ExactSol()
-a = ['x**2+sin(y)', 'exp(y)+cos(z)', 'tan(z+x)']
-print(e.vector_gradient(a))

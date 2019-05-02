@@ -1,6 +1,4 @@
 from firedrake import *
-from abc import ABCMeta, abstractmethod
-import math
 from project.utils import ExactSol, Expression
 
 
@@ -13,12 +11,16 @@ class BaseClass(object):
         - strings: f, uE, uB
         - firedake operators: form, rhs, bcs, sol
     """
-    __metaclass__ = ABCMeta
 
     def __init__(self, V):
         self._V = V
+        # Extracts mesh from function space
         self.mesh = self.V.mesh()
-        self.test_trial_functions(self._V)
+
+        # Initializes trial and test spaces for the given PDE
+        self.test_trial_functions(self.V)
+
+        # Initializes ExactSol class to enable automatic rhs functions
         self.ExactSol = ExactSol()
 
         self._form = None
@@ -27,7 +29,7 @@ class BaseClass(object):
         self._f = None
         self._uB = None
         self._uE = None
-        self._sol = None
+        self._sol = Function(self.V)
 
     @property
     def dim(self):
@@ -43,8 +45,6 @@ class BaseClass(object):
 
     @property
     def sol(self):
-        if not self._sol:
-            self._sol = Function(self._V)
         return self._sol
 
     @sol.setter
@@ -111,7 +111,7 @@ class BaseClass(object):
 
     def test_trial_functions(self, V):
         try:
-            dim = W.num_sub_spaces()
+            dim = V.num_sub_spaces()
         except:
             dim = 1
 

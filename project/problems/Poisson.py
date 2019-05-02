@@ -1,9 +1,19 @@
 from .BaseClass import BaseClass
-from firedrake import inner, dx, dot, grad, DirichletBC, FacetNormal
+from firedrake import inner, dx, grad
 
 
 class Poisson(BaseClass):
-    """docstring for ClassName"""
+    """
+    Definition of the steady state Poisson class which implements the finite
+    element solution for Poissons equation:
+    .. math::
+        -\\Delta u = f on \\Omega
+        with u = u_b on \\partial\\Omega
+
+    Types of data:
+        - strings: f, uE, uB
+        - firedake operators: form, rhs, bcs, sol
+    """
 
     def __init__(self, V, nu, opt={'form': 'linear'}):
         super(Poisson, self).__init__(V)
